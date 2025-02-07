@@ -16,17 +16,17 @@ running = True
 pid = os.getpid()
 client_id = "1336631328195481722"
 epoch = int(time.time())
-# RPC = Presence(client_id)
-# RPC.connect()
+RPC = Presence(client_id)
+RPC.connect()
 
-# RPC.update(
-#     pid=pid,
-#     state="Dev testing",
-#     details="Inking and Incanting",
-#     start=int(time.time()), 
-#     large_image="icon",
-#     large_text="The Enchanters Book awaits...."
-# )
+RPC.update(
+    pid=pid,
+    state="Dev testing",
+    details="Inking and Incanting",
+    start=int(time.time()), 
+    large_image="icon",
+    large_text="The Enchanters Book awaits...."
+)
 
 
 

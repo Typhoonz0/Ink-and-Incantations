@@ -1,5 +1,5 @@
 """A file containing all the summonable units"""
-import pygame  
+import pygame, random
 class Unit:
     def __init__(self):
         self.hp = 1
@@ -9,27 +9,46 @@ class Unit:
         self.x = 0
         self.y = 0
         self.target = [0,0]
-        self.Asset = pygame.image.load('')
+        self.Asset = pygame.image.load("Assets\Sprites\\unit_sprites\Footman.png")
     def __str__(self):
         return "A Unit was summoned"
     
-    def move(self):
-        if self.target[0] > self.x:
-            self.x += self.speed
-        else:
-            self.x -= self.speed
-        if self.target[1] > self.y:
-            self.y += self.speed
-        else:
-            self.y -= self.speed
-        if self.x > 1322:
-            self.x = 1322
-        elif self.x < 598:
-            self.x = 598   
-        if self.y > 876:
-            self.y = 876
-        elif self.y < 154:
-            self.y = 154
+    def move(self, frame, team):
+        if frame in range(0, 500, 20) and self.__class__.__name__ != "Generator":
+            new_x = self.x
+            new_y = self.y
+
+            if self.target[0] > self.x:
+                new_x += random.randint(1, self.speed)
+            else:
+                new_x -= random.randint(1, self.speed)
+
+            if self.target[1] > self.y:
+                new_y += random.randint(1, self.speed)
+            else:
+                new_y -= random.randint(1, self.speed)
+            # Check for collisions with other units in the team
+            collision = False
+            for t in team:
+                if t.x == new_x and t.y == new_y:
+                    collision = True
+                    break
+
+            if not collision:
+                self.x = new_x
+                self.y = new_y
+
+            # Ensure the unit stays within bounds
+            if self.x > 1322:
+                self.x = 1322
+            elif self.x < 598:
+                self.x = 598   
+            if self.y > 876:
+                self.y = 876
+            elif self.y < 154:
+                self.y = 154
+            
+        
 
 class Footman(Unit):
     """The Footman Unit type (!:1/1/1)"""
@@ -41,7 +60,7 @@ class Footman(Unit):
         self.x = xy[0]
         self.y = xy[1]
         self.target = [0,0]
-        self.Asset = pygame.image.load('')
+        self.Asset = pygame.image.load("Assets\Sprites\\unit_sprites\Footman.png")
 
 class Horse(Unit):
     """The Horse Unit type (#:2/2/3)"""
@@ -53,7 +72,7 @@ class Horse(Unit):
         self.x = xy[0]
         self.y = xy[1]
         self.target = [0,0]
-        self.Asset = pygame.image.load('')
+        self.Asset = pygame.image.load("Assets\Sprites\\unit_sprites\Horse.png")
 
 class Soldier(Unit):
     """The Soldier Unit type (@:3/3/2)"""
@@ -65,7 +84,7 @@ class Soldier(Unit):
         self.x = xy[0]
         self.y = xy[1]
         self.target = [0,0]
-        self.Asset = pygame.image.load('')
+        self.Asset = pygame.image.load("Assets\Sprites\\unit_sprites\Soldier.png")
 
 class Summoner(Unit):
     """The Summoner Unit type ($:1/0/6)"""
@@ -73,11 +92,11 @@ class Summoner(Unit):
         self.hp = 1
         self.attack = 0
         self.cost = 6
-        self.speed = 2
+        self.speed = 3
         self.x = xy[0]
         self.y = xy[1]
         self.target = [0,0]
-        self.Asset = pygame.image.load('')
+        self.Asset = pygame.image.load("Assets\Sprites\\unit_sprites\Summoner.png")
 
 class Minion(Unit):
     """The Minion Unit type (%:1/2/0)"""
@@ -88,8 +107,9 @@ class Minion(Unit):
         self.speed = 2
         self.x = xy[0]
         self.y = xy[1]
+        self.lifetime = 0
         self.target = [0,0]
-        self.Asset = pygame.image.load('')
+        self.Asset = pygame.image.load("Assets\Sprites\\unit_sprites\Minion.png")
 
 class Generator(Unit):
     """The Generator Unit type (^:4/0/0)"""
@@ -101,7 +121,7 @@ class Generator(Unit):
         self.x = xy[0]
         self.y = xy[1]
         self.target = [0,0]
-        self.Asset = pygame.image.load('Assets\Sprites\Generator.png')
+        self.Asset = pygame.image.load("Assets\Sprites\Generator.png")
 
 class Runner(Unit):
     """The Runner Unit type (&:3/3/8)"""
@@ -113,7 +133,7 @@ class Runner(Unit):
         self.x = xy[0]
         self.y = xy[1]
         self.target = [0,0]
-        self.Asset = pygame.image.load('')
+        self.Asset = pygame.image.load("Assets\Sprites\\unit_sprites\Runner.png")
 
 class Tank(Unit):
     """The Tank Unit type (*:10/10/8)"""
@@ -125,4 +145,4 @@ class Tank(Unit):
         self.x = xy[0]
         self.y = xy[1]
         self.target = [0,0]
-        self.Asset = pygame.image.load('')
+        self.Asset = pygame.image.load("Assets\Sprites\\unit_sprites\Tank.png")

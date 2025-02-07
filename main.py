@@ -16,17 +16,17 @@ running = True
 pid = os.getpid()
 client_id = "1336631328195481722"
 epoch = int(time.time())
-RPC = Presence(client_id)
-RPC.connect()
+# RPC = Presence(client_id)
+# RPC.connect()
 
-RPC.update(
-    pid=pid,
-    state="Dev testing",
-    details="Inking and Incanting",
-    start=int(time.time()), 
-    large_image="icon",
-    large_text="The Enchanters Book awaits...."
-)
+# RPC.update(
+#     pid=pid,
+#     state="Dev testing",
+#     details="Inking and Incanting",
+#     start=int(time.time()), 
+#     large_image="icon",
+#     large_text="The Enchanters Book awaits...."
+# )
 
 
 
@@ -40,7 +40,7 @@ pygame.display.set_caption('Ink and Incantations')
 gameDisplay.fill((0,0,0))
 pygame.mixer.music.load("Assets\Music\dark-fantasy-ambient-dungeon-synth-248213.mp3")
 pygame.mixer.music.play(loops=-1)
-pygame.mixer.music.set_volume(50)
+pygame.mixer.music.set_volume(1)
 
 TitleFont = pygame.font.Font("""Assets\Fonts\Books-Vhasenti.ttf""", 50)
 SpeechFont = pygame.font.Font("""Assets\Fonts\Speech.ttf""", 30)
@@ -54,11 +54,11 @@ while running:
         if event.type == MOUSEBUTTONDOWN and event.button == 1:
             if event.pos[0] in range(930, 1000, 1) and event.pos[1] in range(550,575, 1):
                 a = 255
-                v = 50
+                v = 1
                 for i in range(255):
                     gameDisplay.fill((0, 0, 0))
                     a -=1
-                    v -= 0.2
+                    v -= 0.004
                     pygame.mixer.music.set_volume(v)
                     title.set_alpha(a)
                     play.set_alpha(a)

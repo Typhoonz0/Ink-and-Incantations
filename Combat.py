@@ -1,4 +1,4 @@
-import Units, pygame, time
+import Units, pygame, random
 from Ai import Enchanter
 from pygame.locals import *
 
@@ -42,10 +42,29 @@ def BatStart():
         pygame.display.flip()
         
         clock.tick(100)
+        skip = False
         if i != 2 or i != 0:
-            time.sleep(4)
+            for i in range(4000):
+                if skip:
+                    break
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                        quit()
+                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                        skip = True
+                pygame.time.delay(1)
+                    
         else:
-            time.sleep(2)
+            for i in range(2000):
+                if skip:
+                    break
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                        quit()
+                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                        skip = True
+                pygame.time.delay(1)
+                    
         
     # fade in the background
     a = 0
@@ -57,7 +76,7 @@ def BatStart():
         pygame.display.flip()
 
     # fade in the UI + pumps    
-    time.sleep(1)
+    pygame.time.delay(1)
     runnint = True
     Pumps = [Units.Generator((760, 315)), Units.Generator((1120, 315)), Units.Generator((760, 650)), Units.Generator((1120, 650))]
     Hp = HPFont.render(str(player_HP) + ":" + str(Enchanter_HP), True, (255, 150, 255))
@@ -86,6 +105,7 @@ def BatStart():
     startselect = (960, 540)
     endselect = (0, 0)
     frame = 0
+    counter = 0
     Selecting = False
     selected = []
     friendly = []
@@ -133,10 +153,16 @@ def BatStart():
                 if 598 < event.pos[0] < 1322 and Selecting and 154 < event.pos[1] < 876:
                     endselect = event.pos
                     Selecting = False
+                    start_x, end_x = sorted([startselect[0], endselect[0]])
+                    start_y, end_y = sorted([startselect[1], endselect[1]])
+                    startselect = (start_x, start_y)
+                    endselect = (end_x, end_y)
                     selected = []
                     for f in friendly:
                         if startselect[0] <= f.x <= endselect[0] and startselect[1] <= f.y <= endselect[1]:
                             selected.append(f)
+                    print(f"Selection from {startselect} to {endselect}")
+                    print(f"Selected units: {selected}")
                 elif Selecting:
                     # if not in bounds, find which co-ords are in bounds, if none, find the closest
                     xrange = [598, 1322]
@@ -149,10 +175,15 @@ def BatStart():
                         endselect = (min(xrange, key=lambda x: abs(x - event.pos[0])), min(yrange, key=lambda y: abs(y - event.pos[1])))
                     selected = []
                     Selecting = False
+                    start_x, end_x = sorted([startselect[0], endselect[0]])
+                    start_y, end_y = sorted([startselect[1], endselect[1]])
+                    startselect = (start_x, start_y)
+                    endselect = (end_x, end_y)
                     for f in friendly:
                         if startselect[0] <= f.x <= endselect[0] and startselect[1] <= f.y <= endselect[1]:
                             selected.append(f)
-
+                    print(f"Selection from {startselect} to {endselect}")
+                    print(f"Selected units: {selected}")
             if event.type == MOUSEBUTTONDOWN and event.button == 3:
                 for s in selected:
                     s.target = event.pos
@@ -167,6 +198,7 @@ def BatStart():
                 if blot[1] <=0:
                     inkblots.remove(blot)
             inkblot.set_alpha(blot[1])
+            pygame.transform.rotate(inkblot, blot[3])
             gameDisplay.blit(inkblot, blot[0])
 
             # putting the pumps on the field
@@ -212,7 +244,7 @@ def BatStart():
                     print("Friendly Pump destroyed")
                     enemy.append(Units.Generator([f.x, f.y]))
                 else:
-                    inkblots.append([(f.x, f.y), 255, 1000])
+                    inkblots.append([(f.x, f.y), 255, 1000, random.randint(0, 360)])
                 friendly.remove(f)
             # movement
             else:
@@ -227,7 +259,7 @@ def BatStart():
             if f.__class__.__name__ == "Minion":
                 f.lifetime += 1
                 if f.lifetime >= 1000:
-                    inkblots.append([(f.x, f.y), 255, 1000])
+                    inkblots.append([(f.x, f.y), 255, 1000, random.randint(0, 360)])
                     friendly.remove(f)
 
         # similar to player controlled units, but for enchanter units
@@ -244,7 +276,7 @@ def BatStart():
                     print("Enemy Pump destroyed")
                     friendly.append(Units.Generator([e.x, e.y]))
                 else:
-                    inkblots.append([(e.x, e.y), 255, 1000])
+                    inkblots.append([(e.x, e.y), 255, 1000, random.randint(0, 360)])
                 enemy.remove(e)
             else:
                 e.move(frame, enemy)
@@ -257,7 +289,7 @@ def BatStart():
             if e.__class__.__name__ == "Minion":
                 e.lifetime += 1
                 if e.lifetime >= 1000:
-                    inkblots.append([(e.x, e.y), 255, 1000])
+                    inkblots.append([(e.x, e.y), 255, 1000, random.randint(0, 360)])
                     enemy.remove(e)
 
         # Mana Regen, for both player and Enchanter
@@ -277,36 +309,50 @@ def BatStart():
 
         # Summoning enchanter units
         if frame in (100, 200, 300, 400, 500):
-            summon = Enchanter.summon(Enchanter_mana)
-            # print(summon)
-            if summon == '0':
+            summon = Enchanter.summon(Enchanter_mana, p_e_controled, enemy)
+            print(summon)
+            if summon == 0:
                 enemy.append(Units.Footman([966, 185]))
                 Enchanter_mana -= 1
-            elif summon == '1':
+                last = [enemy[-1]]
+                Enchanter.target(last, friendly, Pumps, player_HP, Enchanter_HP)
+            elif summon == 1:
                 enemy.append(Units.Horse([966, 185]))
                 Enchanter_mana -= 3
-            elif summon == '2':
+                last = [enemy[-1]]
+                Enchanter.target(last, friendly, Pumps, player_HP, Enchanter_HP)
+            elif summon == 2:
                 enemy.append(Units.Soldier([966, 185]))
                 Enchanter_mana -= 3
-            elif summon == '3':
+                last = [enemy[-1]]
+                Enchanter.target(last, friendly, Pumps, player_HP, Enchanter_HP)
+            elif summon == 3:
                 enemy.append(Units.Summoner([966, 185]))
                 Enchanter_mana -= 6
-            elif summon == '4':
+                last = [enemy[-1]]
+                Enchanter.target(last, friendly, Pumps, player_HP, Enchanter_HP)
+            elif summon == 4:
                 enemy.append(Units.Runner([966, 185]))
                 Enchanter_mana -= 8
-            elif summon == '5':
+                last = [enemy[-1]]
+                Enchanter.target(last, friendly, Pumps, player_HP, Enchanter_HP)
+            elif summon == 4:
                 enemy.append(Units.Tank([966, 185]))
                 Enchanter_mana -= 8
-
-            # print("summon failed")
-            if enemy:
-                enemy[-1].target = [966, 185]
-
+                last = [enemy[-1]]
+                Enchanter.target(last, friendly, Pumps, player_HP, Enchanter_HP)
+            else:
+                print("summon failed")
+                
             # enchanter targeting
+
 
         if frame >= 500:
             frame = 0
-            Enchanter.target(enemy, friendly, Pumps)
+            counter += 1
+            if counter == 2:
+                Enchanter.target(enemy, friendly, Pumps, player_HP, Enchanter_HP)
+                counter = 0
         # player mana display
         manaPath = "Assets\Sprites\Mana_counter\\" + str(player_mana) + ".png"
         manaCounter = pygame.image.load(manaPath)

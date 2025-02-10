@@ -128,7 +128,7 @@ while running:
                     gameDisplay.blit(title, (770, 400))
                     gameDisplay.blit(play, (930, 550))
                     gameDisplay.blit(_quit, (930, 600))
-                    pygame.time.delay(10)
+                    pygame.time.delay(1)
                     pygame.display.update()
                 pygame.time.delay(1000)   
 

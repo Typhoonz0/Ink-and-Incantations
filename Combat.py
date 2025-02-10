@@ -14,7 +14,6 @@ def BatStart():
     BattleGround = pygame.image.load("Assets\Sprites\pixil-frame-0.png")
     inkblot = pygame.image.load("Assets\Sprites\InkBlot.png")
 
-    running = True
     clock = pygame.time.Clock()
     pygame.init()
     pygame.font.init()
@@ -77,9 +76,15 @@ def BatStart():
 
     # fade in the UI + pumps    
     pygame.time.delay(1)
-    runnint = True
+    running = True
     Pumps = [Units.Generator((760, 315)), Units.Generator((1120, 315)), Units.Generator((760, 650)), Units.Generator((1120, 650))]
-    Hp = HPFont.render(str(player_HP) + ":" + str(Enchanter_HP), True, (255, 150, 255))
+    Hp = HPFont.render(str(player_HP) + ":" + str(Enchanter_HP), False, (255, 150, 255))
+    Footman_cost = SpeechFont.render('1', True, (0, 0, 0))
+    Horse_cost = SpeechFont.render('3', True, (0, 0, 0))
+    Soldier_cost = SpeechFont.render('3', True, (0, 0, 0))
+    Summoner_cost = SpeechFont.render('6', True, (0, 0, 0))
+    Runner_cost = SpeechFont.render('8', True, (0, 0, 0))
+    Tank_cost = SpeechFont.render('8', True, (0, 0, 0))
     summon_UI = pygame.image.load("Assets\Sprites\Selecetion grid.png")
     a = 0
     manaCounter = pygame.image.load("Assets\Sprites\Mana_counter\\5.png")
@@ -91,17 +96,28 @@ def BatStart():
             p.Asset.set_alpha(a)
             gameDisplay.blit(p.Asset, (p.x, p.y))
         manaCounter.set_alpha(a)
-        gameDisplay.blit(manaCounter, (200, 850))
-        Hp.set_alpha(a)
-        gameDisplay.blit(Hp, (200, 200))
         summon_UI.set_alpha(a)
         gameDisplay.blit(summon_UI, (1600, 200))
+        gameDisplay.blit(manaCounter, (200, 862))
+        Footman_cost.set_alpha(a)
+        gameDisplay.blit(Footman_cost, (1688, 287))
+        Horse_cost.set_alpha(a)
+        gameDisplay.blit(Horse_cost, (1612, 412))
+        Soldier_cost.set_alpha(a)
+        gameDisplay.blit(Soldier_cost, (1700, 537))
+        Summoner_cost.set_alpha(a)
+        gameDisplay.blit(Summoner_cost, (1700, 667))
+        Runner_cost.set_alpha(a)
+        gameDisplay.blit(Runner_cost, (1700, 782))
+        Tank_cost.set_alpha(a)
+        gameDisplay.blit(Tank_cost, (1700, 907))
+        Hp.set_alpha(a)
+        gameDisplay.blit(Hp, (200, 200))
         pygame.display.flip()
 
     # loading Vars
     cursor_img = pygame.image.load("Assets\Sprites\Mouse.png")
     pygame.mouse.set_visible(False)
-    cursor_img_rect = cursor_img.get_rect()
     startselect = (960, 540)
     endselect = (0, 0)
     frame = 0
@@ -118,6 +134,7 @@ def BatStart():
                 running = False
             # start of selection
             if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                print(event.pos)
                 if 598 < event.pos[0] < 1322 and not Selecting and 154 < event.pos[1] < 876:
                     startselect = event.pos
                     Selecting = True
@@ -350,7 +367,7 @@ def BatStart():
         if frame >= 500:
             frame = 0
             counter += 1
-            if counter == 2:
+            if counter == 3:
                 Enchanter.target(enemy, friendly, Pumps, player_HP, Enchanter_HP)
                 counter = 0
         # player mana display
@@ -363,6 +380,12 @@ def BatStart():
         gameDisplay.blit(hp, (200, 200))
 
         gameDisplay.blit(summon_UI, (1600, 200))
+        gameDisplay.blit(Footman_cost, (1688, 287))
+        gameDisplay.blit(Horse_cost, (1612, 416))
+        gameDisplay.blit(Soldier_cost, (1692, 535))
+        gameDisplay.blit(Summoner_cost, (1700, 662))
+        gameDisplay.blit(Runner_cost, (1700, 785))
+        gameDisplay.blit(Tank_cost, (1700, 912))
         
         # cursor display
         gameDisplay.blit(cursor_img, pygame.mouse.get_pos())

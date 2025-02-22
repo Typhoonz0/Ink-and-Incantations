@@ -1,43 +1,63 @@
-import Units, pygame, random
-from Ai import Enchanter
+import Units, pygame, random, SaveUpdater
+from Ai import Enchanter, Madman, Monarch
 from pygame.locals import *
 
 
-def BatStart():
+def BatStart(Ai, display):
     player_mana = 5
     Enchanter_mana = 5
     player_HP = 20
     Enchanter_HP=20
+    Won = False
+    Enemy_ai = Enchanter
 
-
-    icon = pygame.image.load("Assets\Icon.png")
+    gameDisplay = display
     BattleGround = pygame.image.load("Assets\Sprites\pixil-frame-0.png")
     inkblot = pygame.image.load("Assets\Sprites\InkBlot.png")
 
     clock = pygame.time.Clock()
-    pygame.init()
-    pygame.font.init()
-    pygame.mixer.init()
-    pygame.display.set_icon(icon)
-    gameDisplay = pygame.display.set_mode((1920,1080))
-    pygame.display.set_caption('Ink and Incantations')
     gameDisplay.fill((0,0,0))
     pygame.mixer.music.load("Assets\Music\last-fight-dungeon-synth-music-281592.mp3")
     pygame.mixer.music.play(loops=-1)
     pygame.mixer.music.set_volume(1)
-
-    SpeechFont = pygame.font.Font("""Assets\Fonts\Speech.ttf""", 30)
     HPFont = pygame.font.Font("""Assets\Fonts\Speech.ttf""", 60)
-    Ready = SpeechFont.render('Are you Ready, Mage?', True, (255, 150, 255))
-    Begin = SpeechFont.render('Let us begin.', True, (255, 150, 255))
+    if Ai == 'enchanter':
+        SpeechFont = pygame.font.Font("""Assets\Fonts\Speech.ttf""", 30)
+        Ready = SpeechFont.render('Are you Ready, Mage?', True, (255, 150, 255))
+        Begin = SpeechFont.render('Let us begin.', True, (255, 150, 255))
+        Rloc = (800, 900)
+        Bloc = (870, 900)
+        Enemy_ai = Enchanter
+    elif Ai == 'monarch':
+        SpeechFont = pygame.font.Font("""Assets\Fonts\Speech.ttf""", 30)
+        Ready = SpeechFont.render('You know why I summoned you to my court?', True, (255, 150, 255))
+        Begin = SpeechFont.render('To entertain me.', True, (255, 150, 255))
+        Rloc = (800, 900)
+        Bloc = (870, 900)
+        Enemy_ai = Monarch
+    elif Ai == 'madman':
+        SpeechFont = pygame.font.Font("""Assets\Fonts\Speech.ttf""", 30)
+        TitleFont = pygame.font.Font("""Assets\Fonts\Books-Vhasenti.ttf""", 50)
+        Ready = SpeechFont.render('The walls, I hear them in the walls. Those Ticks.', True, (255, 0, 0))
+        Begin = TitleFont.render('Do you hear them too?', True, (255, 0, 0))
+        Rloc = (725, 900)
+        Bloc = (770, 400)
+        Enemy_ai = Madman
+    else:
+        SpeechFont = pygame.font.Font("""Assets\Fonts\Speech.ttf""", 30)
+        Ready = SpeechFont.render('Error', True, (255, 150, 255))
+        Begin = SpeechFont.render('Error: No AI selected', True, (255, 150, 255))
+        Rloc = (800, 900)
+        Bloc = (870, 900)
+        Enemy_ai = Enchanter
 
     # enchanters speech
     for i in range(0, 5):
         gameDisplay.fill((0, 0, 0))
         if i == 1:
-            gameDisplay.blit(Ready, (800, 900))
+            gameDisplay.blit(Ready, Rloc)
         if i == 3:
-            gameDisplay.blit(Begin, (870, 900))
+            gameDisplay.blit(Begin, Bloc)
         pygame.display.flip()
         
         clock.tick(100)
@@ -323,52 +343,60 @@ def BatStart():
             Enchanter_mana += 1
             if Enchanter_mana > 9:
                 Enchanter_mana = 9
+        
+        if Ai == 'madman':
+            #Yes, the madman Cheats, Hes mad, he doesnt care about the rules
+            Enchanter_mana = 9
 
         # Summoning enchanter units
         if frame in (100, 200, 300, 400, 500):
-            summon = Enchanter.summon(Enchanter_mana, p_e_controled, enemy)
+            summon = Enemy_ai.summon(Enchanter_mana, p_e_controled, enemy)
             print(summon)
             if summon == 0:
                 enemy.append(Units.Footman([966, 185]))
                 Enchanter_mana -= 1
                 last = [enemy[-1]]
-                Enchanter.target(last, friendly, Pumps, player_HP, Enchanter_HP)
+                Enemy_ai.target(last, friendly, Pumps, player_HP, Enchanter_HP)
             elif summon == 1:
                 enemy.append(Units.Horse([966, 185]))
                 Enchanter_mana -= 3
                 last = [enemy[-1]]
-                Enchanter.target(last, friendly, Pumps, player_HP, Enchanter_HP)
+                Enemy_ai.target(last, friendly, Pumps, player_HP, Enchanter_HP)
             elif summon == 2:
                 enemy.append(Units.Soldier([966, 185]))
                 Enchanter_mana -= 3
                 last = [enemy[-1]]
-                Enchanter.target(last, friendly, Pumps, player_HP, Enchanter_HP)
+                Enemy_ai.target(last, friendly, Pumps, player_HP, Enchanter_HP)
             elif summon == 3:
                 enemy.append(Units.Summoner([966, 185]))
                 Enchanter_mana -= 6
                 last = [enemy[-1]]
-                Enchanter.target(last, friendly, Pumps, player_HP, Enchanter_HP)
+                Enemy_ai.target(last, friendly, Pumps, player_HP, Enchanter_HP)
             elif summon == 4:
                 enemy.append(Units.Runner([966, 185]))
                 Enchanter_mana -= 8
                 last = [enemy[-1]]
-                Enchanter.target(last, friendly, Pumps, player_HP, Enchanter_HP)
-            elif summon == 4:
+                Enemy_ai.target(last, friendly, Pumps, player_HP, Enchanter_HP)
+            elif summon == 5:
                 enemy.append(Units.Tank([966, 185]))
                 Enchanter_mana -= 8
                 last = [enemy[-1]]
-                Enchanter.target(last, friendly, Pumps, player_HP, Enchanter_HP)
+                Enemy_ai.target(last, friendly, Pumps, player_HP, Enchanter_HP)
             else:
                 print("summon failed")
                 
             # enchanter targeting
-
+        if player_HP <= 0:
+            running = False
+            Won = True
+        if Enchanter_HP <= 0:
+            running = False
 
         if frame >= 500:
             frame = 0
             counter += 1
             if counter == 3:
-                Enchanter.target(enemy, friendly, Pumps, player_HP, Enchanter_HP)
+                Enemy_ai.target(enemy, friendly, Pumps, player_HP, Enchanter_HP)
                 counter = 0
         # player mana display
         manaPath = "Assets\Sprites\Mana_counter\\" + str(player_mana) + ".png"
@@ -395,3 +423,12 @@ def BatStart():
         clock.tick(100)
         gameDisplay.fill((0, 0, 0))
         frame += 1
+    
+
+    #Cinematics For Win/Loss PLay here
+    #If BEFT (found using the SaveUpdater file) is false, Restart the battle with enchanter at 100 HP, and player with 0, the enchanter has a bunch of units about to kill the player, the battle then continues till the player loses, in which case, the enchanter has won
+    #If the player has lost to the monarch, show her victory lines, wait 3 seconds, then crash the game.
+
+
+    #Show Score and ask if they wanna play again, if they player wants to return to menu, return False, Else return True (Doesnt apply to monarch as game is crashed)
+

@@ -2,7 +2,7 @@
 import pygame #Pygame cuz its a game
 from pygame.locals import *
 import time
- #for networking (if i get around to it)
+#for networking (if i get around to it)
 from pypresence import Presence #For discord presence
 import os
 
@@ -28,6 +28,12 @@ epoch = int(time.time())
 #     large_text="The Enchanters Book awaits...."
 # )
 
+
+def crash():
+    try:
+        crash()
+    except:
+        crash()
 
 
 clock = pygame.time.Clock()
@@ -88,7 +94,6 @@ for i in range(255):
     gameDisplay.blit(note2, (500, 600))
     pygame.display.update()
 
-
 a = 0
 v = 0
 for i in range(255):
@@ -106,7 +111,7 @@ for i in range(255):
     gameDisplay.blit(_quit, (930, 600))
     pygame.display.update()   
 
-
+ai = 'madman'
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key==K_ESCAPE):
@@ -132,7 +137,7 @@ while running:
                     pygame.display.update()
                 pygame.time.delay(1000)   
 
-                Combat.BatStart()
+                Combat.BatStart(ai, gameDisplay)
                 running = False
             elif event.pos[0] in range(930, 1000, 1) and event.pos[1] in range(600,630, 1):
                 running = False
@@ -150,3 +155,4 @@ while running:
 # - constant game speed / FPS -
 
     clock.tick(100)
+    

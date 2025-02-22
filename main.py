@@ -18,7 +18,6 @@ client_id = "1336631328195481722"
 epoch = int(time.time())
 # RPC = Presence(client_id)
 # RPC.connect()
-
 # RPC.update(
 #     pid=pid,
 #     state="Dev testing",
@@ -28,12 +27,6 @@ epoch = int(time.time())
 #     large_text="The Enchanters Book awaits...."
 # )
 
-
-def crash():
-    try:
-        crash()
-    except:
-        crash()
 
 
 clock = pygame.time.Clock()
@@ -111,7 +104,7 @@ for i in range(255):
     gameDisplay.blit(_quit, (930, 600))
     pygame.display.update()   
 
-ai = 'madman'
+ai = 'enchanter'
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key==K_ESCAPE):

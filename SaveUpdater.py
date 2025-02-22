@@ -52,8 +52,12 @@ def decode_save_file():
     except FileNotFoundError:
         print("Save file not found.")
         return None
-
-# Example usage
-encode_save_file()
-decoded_data = decode_save_file()
-print(decoded_data)
+if __name__ == "__main__" :
+    save_data = {
+            'enchanter': False,
+            'monarch': False,
+            'madman': False,
+            'tutorial': False,
+            'beat_enchanter_first_time': False
+        }
+    encode_save_file(save_data)

@@ -32,8 +32,8 @@ def BatStart(Ai, display):
         Bloc = (870, 900)
         Enemy_ai = Enchanter
     elif Ai == 'monarch':
-        Ready = SpeechFont.render('You know why I summoned you to my court?', True, (255, 150, 255))
-        Begin = SpeechFont.render('To entertain me.', True, (255, 150, 255))
+        Ready = SpeechFont.render('You know why I summoned you to my court?', True, (80, 200, 120))
+        Begin = SpeechFont.render('To entertain me.', True, (80, 200, 120))
         Rloc = (800, 900)
         Bloc = (870, 900)
         Enemy_ai = Monarch
@@ -148,7 +148,6 @@ def BatStart(Ai, display):
     enemy = []
     inkblots = []
     if not SaveUpdater.decode_save_file()['tutorial']:
-        #Run tutorial (Not programmed)
         tutorial_steps = [
             ("Welcome to the battlefield, Mage.", (700, 800)),
             ("This is your mana counter. You need mana to summon units.", (300, 800)),
@@ -433,9 +432,10 @@ def BatStart(Ai, display):
             # enchanter targeting
         if player_HP <= 0:
             running = False
-            Won = True
+            
         if Enchanter_HP <= 0:
             running = False
+            Won = True
 
         if frame >= 500:
             frame = 0
@@ -478,8 +478,8 @@ def BatStart(Ai, display):
     if Won:
         if Ai == 'enchanter':
             if SaveUpdater.decode_save_file()["beat_enchanter_first_time"]:
-                Second_1 = SpeechFont.render('The game is the same.', True, (255, 150, 255))
-                Second_2 = SpeechFont.render('So you have learnt…', True, (255, 150, 255))
+                Second_1 = SpeechFont.render('The game is the same', True, (255, 150, 255))
+                Second_2 = SpeechFont.render('So you have learnt', True, (255, 150, 255))
                 FirstWLoc = (800, 900)
                 Second1Loc = (870, 900)
                 Second2Loc = (870, 900)
@@ -490,13 +490,13 @@ def BatStart(Ai, display):
                 First_Win = SpeechFont.render('You never learn', True, (255, 150, 255))
                 Enchanter_HP = 100
                 player_HP = 0
-                Loss_1 = SpeechFont.render(' All you need to do is learn…', True, (255, 150, 255))
-                Loss_2 = SpeechFont.render('Again.', True, (255, 150, 255))
+                Loss_1 = SpeechFont.render(' All you need to do is learn', True, (255, 150, 255))
+                Loss_2 = SpeechFont.render('Again', True, (255, 150, 255))
                 l1Loc = (800, 900)
                 l2Loc = (870, 900)
                 #Restart the battle with enchanter at 100 HP, and player with 0, the enchanter has a bunch of units about to kill the player, the battle then continues till the player loses, in which case, the enchanter has won
         elif Ai == 'monarch':
-            M_win = SpeechFont.render('Oh quite a game, Shall we play again', True, (255, 150, 255))
+            M_win = SpeechFont.render('Oh quite a game, Shall we play again', True, (80, 200, 120))
             mWLoc= (800, 900)
             save = SaveUpdater.decode_save_file()
             save['monarch'] = True
@@ -516,18 +516,18 @@ def BatStart(Ai, display):
             No_wLoc = (870, 900)
     else:
         if Ai == 'enchanter':
-            Loss_1 = SpeechFont.render(' All you need to do is learn…', True, (255, 150, 255))
-            Loss_2 = SpeechFont.render('Again.', True, (255, 150, 255))
+            Loss_1 = SpeechFont.render(' All you need to do is learn', True, (255, 150, 255))
+            Loss_2 = SpeechFont.render('Again', True, (255, 150, 255))
             l1Loc = (800, 900)
             l2Loc = (870, 900)
 
         elif Ai == 'monarch':
-            Crash_1 = SpeechFont.render('You bore me, Guards!', True, (255, 150, 255))
+            Crash_1 = SpeechFont.render('You bore me, Guards', True, (80, 200, 120))
             crash_loc = (800, 900)
             #Crash Game
 
         elif Ai == 'madman':
-            mad_1 = SpeechFont.render('This isnt a Prison, this is a Machine.', True, (255, 0, 0))
+            mad_1 = SpeechFont.render('This isnt a Prison, this is a Machine', True, (255, 0, 0))
             mad_2 = SpeechFont.render('ISNT THAT RIGHT ' + Madman.scare() , True, (255, 0, 0))
             mad1loc = (725, 900)
             mad2loc = (770, 400)

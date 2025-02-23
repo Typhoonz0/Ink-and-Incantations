@@ -1,6 +1,6 @@
 import os
 
-key = 0x55  # Define the key as an integer
+key = 0xF0  # Define the key as an integer
 
 def xor_encrypt_decrypt(data, key):
     return bytearray([b ^ key for b in data])

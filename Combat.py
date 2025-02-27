@@ -265,6 +265,9 @@ def BatStart(Ai, display):
             if event.type == MOUSEBUTTONDOWN and event.button == 3:
                 for s in selected:
                     s.target = event.pos
+            if Selecting and event.type == MOUSEMOTION:
+                inkblots.append([event.pos, 255, 100, random.randint(0, 360)])
+
 
         gameDisplay.blit(BattleGround, (460, 0))
         # putting the inkblots on the field
@@ -299,17 +302,17 @@ def BatStart(Ai, display):
                 # Remove the pump from the field if its HP is 0
             else:
                 for f in friendly:
-                    if p.x - 10 <= f.x <= p.x + 10 and p.y - 10 <= f.y <= p.y + 10:
+                    if p.x - 10 <= f.x <= p.x + 42 and p.y - 10 <= f.y <= p.y + 42:
                         p.hp -= 1
                 for e in enemy:
-                    if p.x - 10 <= e.x <= p.x + 10 and p.y - 10 <= e.y <= p.y + 10:
+                    if p.x - 10 <= e.x <= p.x + 42 and p.y - 10 <= e.y <= p.y + 42:
                         p.hp -= 1
         # putting the selected units on the field
         p_controled = 0
         for f in friendly:
             # checking for collision
             for e in enemy:
-                if f.x in range(e.x - 5, e.x + 5, 1) and f.y in range(e.y - 5, e.y + 5, 1):
+                if f.x in range(e.x, e.x + 12, 1) and f.y in range(e.y, e.y + 12, 1):
                     # combat
                     f.hp -= e.attack
                     e.hp -= f.attack
@@ -480,20 +483,19 @@ def BatStart(Ai, display):
             if SaveUpdater.decode_save_file()["beat_enchanter_first_time"]:
                 Second_1 = SpeechFont.render('The game is the same', True, (255, 150, 255))
                 Second_2 = SpeechFont.render('So you have learnt', True, (255, 150, 255))
-                FirstWLoc = (800, 900)
+                
                 Second1Loc = (870, 900)
                 Second2Loc = (870, 900)
                 save = SaveUpdater.decode_save_file()
                 save['enchanter'] = True
                 SaveUpdater.encode_save_file(save)
+                messages = [(Second_1, Second2Loc), (Second_2, Second1Loc)]
             else:
                 First_Win = SpeechFont.render('You never learn', True, (255, 150, 255))
+                FirstWLoc = (800, 900)
                 Enchanter_HP = 100
-                player_HP = 0
-                Loss_1 = SpeechFont.render(' All you need to do is learn', True, (255, 150, 255))
-                Loss_2 = SpeechFont.render('Again', True, (255, 150, 255))
-                l1Loc = (800, 900)
-                l2Loc = (870, 900)
+                player_HP = 1
+                messages = [(First_Win, FirstWLoc), (Loss_1, l1Loc), (Loss_2, l2Loc)]
                 #Restart the battle with enchanter at 100 HP, and player with 0, the enchanter has a bunch of units about to kill the player, the battle then continues till the player loses, in which case, the enchanter has won
         elif Ai == 'monarch':
             M_win = SpeechFont.render('Oh quite a game, Shall we play again', True, (80, 200, 120))
@@ -501,29 +503,34 @@ def BatStart(Ai, display):
             save = SaveUpdater.decode_save_file()
             save['monarch'] = True
             SaveUpdater.encode_save_file(save)
+            messages = [(M_win, mWLoc)]
 
         elif Ai == 'madman':
             mad_1 = SpeechFont.render('This isnt a Prison, this is a Machine.', True, (255, 0, 0))
             mad_2 = SpeechFont.render('ISNT THAT RIGHT ' + Madman.scare() , True, (255, 0, 0))
             mad1loc = (725, 900)
-            mad_2 = (770, 400)
+            mad2loc = (770, 400)
             save = SaveUpdater.decode_save_file()
             save['madman'] = True
             SaveUpdater.encode_save_file(save)
+            messages = [(mad_1, mad1loc), (mad_2, mad2loc)]
 
         else:
             No_win = SpeechFont.render('Error: No AI selected', True, (255, 150, 255))
             No_wLoc = (870, 900)
+            messages = [(No_win, No_wLoc)]
     else:
         if Ai == 'enchanter':
             Loss_1 = SpeechFont.render(' All you need to do is learn', True, (255, 150, 255))
             Loss_2 = SpeechFont.render('Again', True, (255, 150, 255))
             l1Loc = (800, 900)
             l2Loc = (870, 900)
+            messages = [(Loss_1, l1Loc), (Loss_2, l2Loc)]
 
         elif Ai == 'monarch':
             Crash_1 = SpeechFont.render('You bore me, Guards', True, (80, 200, 120))
             crash_loc = (800, 900)
+            messages = [(Crash_1, crash_loc)]
             #Crash Game
 
         elif Ai == 'madman':
@@ -531,134 +538,130 @@ def BatStart(Ai, display):
             mad_2 = SpeechFont.render('ISNT THAT RIGHT ' + Madman.scare() , True, (255, 0, 0))
             mad1loc = (725, 900)
             mad2loc = (770, 400)
+            messages = [(mad_1, mad1loc), (mad_2, mad2loc)]
 
         else:
             No_loss = SpeechFont.render('Error: No AI selected', True, (255, 150, 255))
             no_lLoc = (870, 900)
-
-    # Display end game messages
-    if Won:
-        if Ai == 'enchanter':
-            if SaveUpdater.decode_save_file()["beat_enchanter_first_time"]:
-                messages = [(Second_1, FirstWLoc), (Second_2, Second1Loc)]
-            else:
-                messages = [(First_Win, FirstWLoc), (Loss_1, l1Loc), (Loss_2, l2Loc)]
-        elif Ai == 'monarch':
-            messages = [(M_win, mWLoc)]
-        elif Ai == 'madman':
-            messages = [(mad_1, mad1loc), (mad_2, mad2loc)]
-        else:
-            messages = [(No_win, No_wLoc)]
-    else:
-        if Ai == 'enchanter':
-            messages = [(Loss_1, l1Loc), (Loss_2, l2Loc)]
-        elif Ai == 'monarch':
-            messages = [(Crash_1, crash_loc)]
-            pygame.quit()
-            return False
-        elif Ai == 'madman':
-            messages = [(mad_1, mad1loc), (mad_2, mad2loc)]
-        else:
             messages = [(No_loss, no_lLoc)]
 
-    for message, loc in messages:
-        gameDisplay.fill((0, 0, 0))
-        gameDisplay.blit(message, loc)
-        pygame.display.flip()
-        skip = False
-        for i in range(4000):
-            if skip:
-                break
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-                    pygame.quit()
-                    return False
-                if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                    skip = True
-            pygame.time.delay(1)
-        if Ai == 'enchanter' and not SaveUpdater.decode_save_file()["beat_enchanter_first_time"]:
-            save = SaveUpdater.decode_save_file()
-            save["beat_enchanter_first_time"] = True
-            SaveUpdater.encode_save_file(save)
-            # Enchanter cheats
-            Enchanter_HP = 100
-            player_HP = 1
-            running = True
+    # Display end game messages
 
-            # Spawn a bunch of enemy troops around the player spawn
-            for _ in range(10):
-                enemy.append(Units.Footman([random.randint(950, 980), random.randint(840, 880)]))
-                enemy.append(Units.Horse([random.randint(950, 980), random.randint(840, 880)]))
-                enemy.append(Units.Soldier([random.randint(950, 980), random.randint(840, 880)]))
-                enemy.append(Units.Runner([random.randint(950, 980), random.randint(840, 880)]))
-
-            while running:
+    if Ai == 'enchanter' and not SaveUpdater.decode_save_file()["beat_enchanter_first_time"]:
+        for message, loc in messages:
+            gameDisplay.fill((0, 0, 0))
+            gameDisplay.blit(message, loc)
+            pygame.display.flip()
+            skip = False
+            for i in range(4000):
+                if skip:
+                    break
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                         pygame.quit()
                         return False
+                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                        skip = True
+        save = SaveUpdater.decode_save_file()
+        save["beat_enchanter_first_time"] = True
+        SaveUpdater.encode_save_file(save)
+        # Enchanter cheats
+        Enchanter_HP = 100
+        player_HP = 1
+        running = True
+        enemy = []
+        # Spawn a bunch of enemy troops around the player spawn
+        for _ in range(10):
+            enemy.append(Units.Footman([random.randint(950, 980), random.randint(840, 880)]))
+            enemy.append(Units.Horse([random.randint(950, 980), random.randint(840, 880)]))
+            enemy.append(Units.Soldier([random.randint(950, 980), random.randint(840, 880)]))
+            enemy.append(Units.Runner([random.randint(950, 980), random.randint(840, 880)]))
 
-                gameDisplay.fill((0, 0, 0))
-                gameDisplay.blit(BattleGround, (460, 0))
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                    pygame.quit()
+                    return False
 
-                for e in enemy:
-                    e.move(frame, enemy)
-                    gameDisplay.blit(e.Asset, (e.x, e.y))
-                    if e.x in range(961, 971) and e.y in range(855, 865):
-                        player_HP -= e.attack
-                    e.hp = 0
-                    if e.hp <= 0:
-                        enemy.remove(e)
-
-                if player_HP <= 0:
-                    running = False
-
-                # Display player and enchanter HP
-                hp = HPFont.render(str(player_HP) + ":" + str(Enchanter_HP), True, (255, 150, 255))
-                gameDisplay.blit(hp, (200, 200))
-
-                # Display cursor
-                gameDisplay.blit(cursor_img, pygame.mouse.get_pos())
-
-                pygame.display.flip()
-                clock.tick(100)
-                frame += 1
-            Loss_1 = SpeechFont.render(' All you need to do is learn…', True, (255, 150, 255))
-            Loss_2 = SpeechFont.render('Again.', True, (255, 150, 255))
-            l1Loc = (800, 900)
-            l2Loc = (870, 900)
-            messages = [(Loss_1, l1Loc), (Loss_2, l2Loc)]
-            for message, loc in messages:
-                gameDisplay.fill((0, 0, 0))
-                gameDisplay.blit(message, loc)
-                pygame.display.flip()
-                skip = False
-                for i in range(4000):
-                    if skip:
-                        break
-                    for event in pygame.event.get():
-                        if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-                            pygame.quit()
-                            return False
-                        if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                            skip = True
-                    pygame.time.delay(1)
-
-        elif Ai == 'monarch':
-            # Monarch crashes the game
-            Crash_1 = SpeechFont.render('You bore me, Guards!', True, (255, 150, 255))
             gameDisplay.fill((0, 0, 0))
-            gameDisplay.blit(Crash_1, (800, 900))
+            gameDisplay.blit(BattleGround, (460, 0))
+
+            for e in enemy:
+                e.move(frame, enemy)
+                gameDisplay.blit(e.Asset, (e.x, e.y))
+                if e.x in range(961, 971) and e.y in range(855, 865):
+                    player_HP -= e.attack
+                    e.hp = 0
+                if e.hp <= 0:
+                    enemy.remove(e)
+
+            if player_HP <= 0:
+                running = False
+
+            # Display player and enchanter HP
+            hp = HPFont.render(str(player_HP) + ":" + str(Enchanter_HP), True, (255, 150, 255))
+            gameDisplay.blit(hp, (200, 200))
+
+            # Display cursor
+            gameDisplay.blit(cursor_img, pygame.mouse.get_pos())
+
             pygame.display.flip()
-            pygame.time.delay(4000)
-            pygame.quit()
-            return False
+            clock.tick(100)
+            frame += 1
+        Loss_1 = SpeechFont.render(' All you need to do is learn…', True, (255, 150, 255))
+        Loss_2 = SpeechFont.render('Again.', True, (255, 150, 255))
+        l1Loc = (800, 900)
+        l2Loc = (870, 900)
+        messages = [(Loss_1, l1Loc), (Loss_2, l2Loc)]
+        for message, loc in messages:
+            gameDisplay.fill((0, 0, 0))
+            gameDisplay.blit(message, loc)
+            pygame.display.flip()
+            skip = False
+            for i in range(4000):
+                if skip:
+                    break
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                        pygame.quit()
+                        return False
+                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                        skip = True
+                pygame.time.delay(1)
+
+    elif Ai == 'monarch':
+        # Monarch crashes the game
+        Crash_1 = SpeechFont.render('You bore me, Guards!', True, (255, 150, 255))
+        gameDisplay.fill((0, 0, 0))
+        gameDisplay.blit(Crash_1, (800, 900))
+        pygame.display.flip()
+        pygame.time.delay(4000)
+        pygame.quit()
+        return False
+    else:
+        for message, loc in messages:
+            gameDisplay.fill((0, 0, 0))
+            gameDisplay.blit(message, loc)
+            pygame.display.flip()
+            skip = False
+            for i in range(4000):
+                if skip:
+                    break
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                        pygame.quit()
+                        return False
+                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                        skip = True
+        
 
     # Ask if the player wants to play again
     play_again_font = pygame.font.Font("Assets\Fonts\Speech.ttf", 40)
     play_again_text = play_again_font.render('Do you want to play again? (Y/N)', True, (255, 255, 255))
+    play_again_text = play_again_font.render(str(score), True, (255, 255, 255))
     gameDisplay.fill((0, 0, 0))
     gameDisplay.blit(play_again_text, (800, 900))
+    gameDisplay.blit(play_again_text, (800, 700))
     pygame.display.flip()
 
     waiting_for_input = True

@@ -129,8 +129,9 @@ while running:
                     pygame.time.delay(1)
                     pygame.display.update()
                 pygame.time.delay(1000)   
-
-                Combat.BatStart(ai, gameDisplay)
+                Again = True
+                while Again:
+                    Again = Combat.BatStart(ai, gameDisplay)
                 running = False
             elif event.pos[0] in range(930, 1000, 1) and event.pos[1] in range(600,630, 1):
                 running = False

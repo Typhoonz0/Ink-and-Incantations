@@ -287,14 +287,14 @@ def BatStart(Ai, display):
             gameDisplay.blit(p.Asset, (p.x, p.y))
             if p.hp <= 0:
                 for f in friendly:
-                    if p.x - 10 <= f.x <= p.x + 10 and p.y - 10 <= f.y <= p.y + 10:
+                    if p.x - 10 <= f.x <= p.x + 42 and p.y - 10 <= f.y <= p.y + 42:
                         # print("Friendly Pump gained")
                         score += 100
                         Pumps.remove(p)
                         friendly.append(Units.Generator([p.x, p.y]))
                         break
                 for e in enemy:
-                    if p.x - 10 <= e.x <= p.x + 10 and p.y - 10 <= e.y <= p.y + 10:
+                    if p.x - 42 <= e.x <= p.x + 42 and p.y - 42 <= e.y <= p.y + 42:
                         # print("Enemy Pump gained")
                         enemy.append(Units.Generator([p.x, p.y]))
                         Pumps.remove(p)

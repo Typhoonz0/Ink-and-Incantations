@@ -18,9 +18,9 @@ The veil breaks
 Make sure you have Python installed (Originally built with python 3.11.9) and installed to the path <br>
 Open up your terminal (search cmd after pressing windows) <br>
 Run this command <br>
-'''
+```
 pip install -r requirements.txt
-'''
+```
 on your first time running, I reccomend running SaveUpdater.py to ensure your save file is fresh
 ### Resetting your save
 THIS WILL RESET ALL YOUR PROGRESS, THIS ACTION IS NOT UNDO-ABLE <br>

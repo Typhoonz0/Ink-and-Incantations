@@ -16,7 +16,7 @@ The veil breaks
 
 ## Setup
 Make sure you have Python installed (Originally built with python 3.11.9) and installed to the path <br>
-Open up your terminal (search cmd after pressing windows) <br>
+Right click in the folder and press "Open in terminal" <br>
 Run this command <br>
 ```
 pip install -r requirements.txt

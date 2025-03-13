@@ -29,5 +29,5 @@ Run SaveUpdater.py to reset your save file
 
 ## Credits
 Director, Developer and Artist - Elementus <br>
-Music by: DeusLower and Erang <- Check them out <br>
+Music by: [DeusLower](https://www.youtube.com/@DeusLower) and [Erang](https://www.youtube.com/channel/UC0xBatTv8HbChLQukeerUCg) <- Check them out <br>
 This game is still a Work in Progress, and is an assessment item, please make pushes to the community-made-updates branch

@@ -2,8 +2,8 @@ import Units, pygame, random, SaveUpdater, time
 from Ai import Enchanter, Madman, Monarch
 from pygame.locals import *
 
-
-def BatStart(Ai:str, display:pygame.Surface):
+def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
+    
     player_mana = 5
     Enchanter_mana = 5
     player_HP = 20
@@ -16,14 +16,23 @@ def BatStart(Ai:str, display:pygame.Surface):
     gameDisplay = display
     BattleGround = pygame.image.load("Assets\Sprites\pixil-frame-0.png")
     inkblot = pygame.image.load("Assets\Sprites\InkBlot.png")
-
     clock = pygame.time.Clock()
     gameDisplay.fill((0,0,0))
-    pygame.mixer.music.load("Assets\Music\last-fight-dungeon-synth-music-281592.mp3")
+    pygame.mixer.music.load("Assets\Music\DungeonSynth2Hr.mp3")
     pygame.mixer.music.play(loops=-1)
     pygame.mixer.music.set_volume(1)
     HPFont = pygame.font.Font("""Assets\Fonts\Speech.ttf""", 60)
     SpeechFont = pygame.font.Font("""Assets\Fonts\Speech.ttf""", 30)
+    pause = SpeechFont.render('Paused', True, (255, 255, 255))
+    epoch = int(time.time())
+    if RPC_on:
+        RPC.update(
+        pid=pid,
+        state="Inking and Incanting",
+        details=f"{player_HP}:{Enchanter_HP}",
+        start=epoch, 
+        large_image="icon",
+        large_text="The Enchanters Book awaits....")
     if Ai == 'enchanter':
         Ready = SpeechFont.render('Are you Ready, Mage?', True, (255, 150, 255))
         Begin = SpeechFont.render('Let us begin.', True, (255, 150, 255))
@@ -146,6 +155,7 @@ def BatStart(Ai:str, display:pygame.Surface):
     friendly = []
     enemy = []
     inkblots = []
+    mouseinkblots = []
     if not SaveUpdater.decode_save_file()['tutorial']:
         tutorial_steps = [
             ("Welcome to the battlefield, Mage.", (700, 800)),
@@ -187,16 +197,27 @@ def BatStart(Ai:str, display:pygame.Surface):
         save['tutorial'] = True
         SaveUpdater.encode_save_file(save)
 
+    pygame.event.clear()
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 running = False
                 pygame.quit()
+            if event.type == KEYDOWN and event.key == K_p:
+                paused = True
+                while paused:
+                    gameDisplay.blit(pause, (800, 450))
+                    pygame.display.flip()
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                            running = False
+                            paused = False
+                        if event.type == KEYDOWN and event.key == K_p:
+                            paused = False 
+                    clock.tick(100)
             # start of selection
             if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                print(event.pos)
                 if 598 < event.pos[0] < 1322 and not Selecting and 154 < event.pos[1] < 876:
-                    startselect = event.pos
                     Selecting = True
                 elif 1600 < event.pos[0] < 1920 and 200 < event.pos[1] < 940:
                     if player_mana >= 1 and event.pos[1] in range(200, 323, 1):
@@ -227,46 +248,40 @@ def BatStart(Ai:str, display:pygame.Surface):
            # end of selection
             if event.type == MOUSEBUTTONUP and event.button == 1:
                 # checking if in bounds of the field
-                if 598 < event.pos[0] < 1322 and Selecting and 154 < event.pos[1] < 876:
-                    endselect = event.pos
-                    Selecting = False
-                    start_x, end_x = sorted([startselect[0], endselect[0]])
-                    start_y, end_y = sorted([startselect[1], endselect[1]])
-                    startselect = (start_x, start_y)
-                    endselect = (end_x, end_y)
+                Selecting = False
+                if mouseinkblots:
+                    blotx=[]
+                    bloty=[]
+                    for ink in mouseinkblots:
+                        blotx.append(ink[0][0])
+                        bloty.append(ink[0][1])
+                    blotx.sort()
+                    bloty.sort()
+                    startselect = (blotx[0], bloty[0])
+                    endselect = (blotx[-1], bloty[-1])
                     selected = []
                     for f in friendly:
                         if startselect[0] <= f.x <= endselect[0] and startselect[1] <= f.y <= endselect[1]:
-                            selected.append(f)
-                    # print(f"Selection from {startselect} to {endselect}")
-                    # print(f"Selected units: {selected}")
-                elif Selecting:
-                    # if not in bounds, find which co-ords are in bounds, if none, find the closest
-                    xrange = [598, 1322]
-                    yrange = [154, 876]
-                    if 598 < event.pos[0] < 1322:
-                        endselect = (event.pos[0], min(yrange, key=lambda y: abs(y - event.pos[1])))
-                    elif 154 < event.pos[1] < 876:
-                        endselect = (min(xrange, key=lambda x: abs(x - event.pos[0])), event.pos[1])
-                    else:
-                        endselect = (min(xrange, key=lambda x: abs(x - event.pos[0])), min(yrange, key=lambda y: abs(y - event.pos[1])))
-                    selected = []
-                    Selecting = False
-                    start_x, end_x = sorted([startselect[0], endselect[0]])
-                    start_y, end_y = sorted([startselect[1], endselect[1]])
-                    startselect = (start_x, start_y)
-                    endselect = (end_x, end_y)
-                    for f in friendly:
-                        if startselect[0] <= f.x <= endselect[0] and startselect[1] <= f.y <= endselect[1]:
-                            selected.append(f)
-                    # print(f"Selection from {startselect} to {endselect}")
-                    # print(f"Selected units: {selected}")
+                                selected.append(f)
+                        # print(f"Selection from {startselect} to {endselect}")
+                        # print(f"Selected units: {selected}")
             if event.type == MOUSEBUTTONDOWN and event.button == 3:
                 for s in selected:
                     s.target = event.pos
+            if event.type == MOUSEBUTTONDOWN and event.button == 2:
+                #middle mouse button
+                print(event.pos)
+            # Define the bounds of the battlefield
+            X_MIN, X_MAX = 598, 1322
+            Y_MIN, Y_MAX = 154, 876
+            # Adjust the boundary conditions in the MOUSEMOTION event handler
             if Selecting and event.type == MOUSEMOTION:
-                inkblots.append([event.pos, 255, 100, random.randint(0, 360)])
-
+                pos = event.pos
+                # Clamp the position within the battlefield bounds
+                clamped_x = max(X_MIN, min(pos[0], X_MAX))
+                clamped_y = max(Y_MIN, min(pos[1], Y_MAX))
+                pos = (clamped_x, clamped_y)
+                mouseinkblots.append([pos, 255, 100, random.randint(0, 360)])
 
         gameDisplay.blit(BattleGround, (460, 0))
         # putting the inkblots on the field
@@ -277,11 +292,27 @@ def BatStart(Ai:str, display:pygame.Surface):
                 blot[1] -= 1
                 if blot[1] <=0:
                     inkblots.remove(blot)
+                    continue
             inkblot.set_alpha(blot[1])
             pygame.transform.rotate(inkblot, blot[3])
             gameDisplay.blit(inkblot, blot[0])
 
-            # putting the pumps on the field
+        for blot in mouseinkblots:
+                if not Selecting:
+                    blot[2] -= 1
+                    if blot[2] <= 0:
+                        blot[2] = 0
+                        blot[1] -= 1
+                        if blot[1] <=0:
+                            try:
+                                inkblots.remove(blot)
+                            except:
+                                pass
+                inkblot.set_alpha(blot[1])
+                pygame.transform.rotate(inkblot, blot[3])
+                gameDisplay.blit(inkblot, blot[0])
+
+        # putting the pumps on the field
         for p in Pumps:
             gameDisplay.blit(p.Asset, (p.x, p.y))
             if p.hp <= 0:
@@ -328,6 +359,7 @@ def BatStart(Ai:str, display:pygame.Surface):
                 else:
                     inkblots.append([(f.x, f.y), 255, 1000, random.randint(0, 360)])
                 friendly.remove(f)
+                continue
             # movement
             else:
                 f.move(frame, friendly)
@@ -343,6 +375,7 @@ def BatStart(Ai:str, display:pygame.Surface):
                 if f.lifetime >= 1000:
                     inkblots.append([(f.x, f.y), 255, 1000, random.randint(0, 360)])
                     friendly.remove(f)
+                    continue
 
         # similar to player controlled units, but for enchanter units
         p_e_controled = 0
@@ -360,6 +393,7 @@ def BatStart(Ai:str, display:pygame.Surface):
                 else:
                     inkblots.append([(e.x, e.y), 255, 1000, random.randint(0, 360)])
                 enemy.remove(e)
+                continue
             else:
                 e.move(frame, enemy)
                 gameDisplay.blit(e.Asset, (e.x, e.y))
@@ -373,6 +407,7 @@ def BatStart(Ai:str, display:pygame.Surface):
                 if e.lifetime >= 1000:
                     inkblots.append([(e.x, e.y), 255, 1000, random.randint(0, 360)])
                     enemy.remove(e)
+                    continue
 
         # Mana Regen, for both player and Enchanter
         P_ratio = {0: 1, 1: 3, 2: 4, 3: 4, 4: 6}
@@ -439,6 +474,9 @@ def BatStart(Ai:str, display:pygame.Surface):
             running = False
             Won = True
 
+        selection_icon = pygame.image.load("Assets\Sprites\\unit_sprites\Selected.png")
+        for s in selected:
+            gameDisplay.blit(selection_icon, (s.x, s.y))
         if frame >= 500:
             frame = 0
             counter += 1
@@ -464,7 +502,14 @@ def BatStart(Ai:str, display:pygame.Surface):
         
         # cursor display
         gameDisplay.blit(cursor_img, pygame.mouse.get_pos())
-
+        if RPC_on:
+            RPC.update(
+            pid=pid,
+            state="Inking and Incanting",
+            details=f"{player_HP}:{Enchanter_HP}",
+            start=epoch, 
+            large_image="icon",
+            large_text="The Enchanters Book awaits....")
         # display update, counters, and FPS
         pygame.display.flip()
         clock.tick(100)
@@ -491,6 +536,10 @@ def BatStart(Ai:str, display:pygame.Surface):
                 messages = [(Second_1, Second2Loc), (Second_2, Second1Loc)]
             else:
                 First_Win = SpeechFont.render('You never learn', True, (255, 150, 255))
+                Loss_1 = SpeechFont.render(' All you need to do is learn', True, (255, 150, 255))
+                Loss_2 = SpeechFont.render('Again', True, (255, 150, 255))
+                l1Loc = (800, 900)
+                l2Loc = (870, 900)
                 FirstWLoc = (800, 900)
                 Enchanter_HP = 100
                 player_HP = 1
@@ -506,7 +555,7 @@ def BatStart(Ai:str, display:pygame.Surface):
 
         elif Ai == 'madman':
             mad_1 = SpeechFont.render('This isnt a Prison, this is a Machine.', True, (255, 0, 0))
-            mad_2 = SpeechFont.render('ISNT THAT RIGHT ' + Madman.scare() , True, (255, 0, 0))
+            mad_2 = SpeechFont.render('ISNT THAT RIGHT ' + Madman.scare() , True, (255, 0, 0)) #ISNT THAT RIGHT {Users name; YOU LIAR if unobtainable}
             mad1loc = (725, 900)
             mad2loc = (770, 400)
             save = SaveUpdater.decode_save_file()
@@ -593,6 +642,7 @@ def BatStart(Ai:str, display:pygame.Surface):
                     e.hp = 0
                 if e.hp <= 0:
                     enemy.remove(e)
+                    continue
 
             if player_HP <= 0:
                 running = False
@@ -657,10 +707,10 @@ def BatStart(Ai:str, display:pygame.Surface):
     # Ask if the player wants to play again
     play_again_font = pygame.font.Font("Assets\Fonts\Speech.ttf", 40)
     play_again_text = play_again_font.render('Do you want to play again? (Y/N)', True, (255, 255, 255))
-    play_again_text = play_again_font.render(str(score), True, (255, 255, 255))
+    score = play_again_font.render(str(int(score)), True, (255, 255, 255))
     gameDisplay.fill((0, 0, 0))
     gameDisplay.blit(play_again_text, (800, 900))
-    gameDisplay.blit(play_again_text, (800, 700))
+    gameDisplay.blit(score, (800, 700))
     pygame.display.flip()
 
     waiting_for_input = True

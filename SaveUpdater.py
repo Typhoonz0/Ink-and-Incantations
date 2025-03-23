@@ -7,7 +7,7 @@ def xor_encrypt_decrypt(data, key):
 
 def encode_save_file(save_data=False):
     """
-    Decodes the Save file in Saves/save.bin
+    Encodes the Save file in Saves/save.bin
      
     'enchanter':Bool, 'monarch':Bool, 'madman':Bool, 'tutorial':Bool, 'BEFT':Bool
     """
@@ -29,10 +29,12 @@ def encode_save_file(save_data=False):
     encrypted_data = xor_encrypt_decrypt(data, key)
     
     # Ensure the Saves directory exists
-    os.makedirs('Saves', exist_ok=True)
+    saves_dir = os.path.join("Saves")
+    os.makedirs(saves_dir, exist_ok=True)
     
     # Write the encrypted data to the file
-    with open('Saves/save.bin', 'wb') as file:
+    save_path = os.path.join(saves_dir, "save.bin")
+    with open(save_path, 'wb') as file:
         file.write(encrypted_data)
 
 def decode_save_file():
@@ -42,7 +44,8 @@ def decode_save_file():
     'enchanter':Bool, 'monarch':Bool, 'madman':Bool, 'tutorial':Bool, 'BEFT':Bool
     """
     try:
-        with open('Saves/save.bin', 'rb') as file:
+        save_path = os.path.join("Saves", "save.bin")
+        with open(save_path, 'rb') as file:
             encrypted_data = file.read()
         
         # Decrypt the data
@@ -61,12 +64,13 @@ def decode_save_file():
     except FileNotFoundError:
         print("Save file not found.")
         return None
-if __name__ == "__main__" :
+
+if __name__ == "__main__":
     save_data = {
-            'enchanter': False,
-            'monarch': False,
-            'madman': False,
-            'tutorial': False,
-            'beat_enchanter_first_time': False
-        }
+        'enchanter': False,
+        'monarch': False,
+        'madman': False,
+        'tutorial': False,
+        'beat_enchanter_first_time': False
+    }
     encode_save_file(save_data)

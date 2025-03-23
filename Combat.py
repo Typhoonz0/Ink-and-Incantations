@@ -1,38 +1,39 @@
 import Units, pygame, random, SaveUpdater, time
 from Ai import Enchanter, Madman, Monarch
 from pygame.locals import *
+import os
 
-def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
-    
+def BatStart(Ai: str, display: pygame.Surface, RPC_on: bool, RPC: object, pid):
     player_mana = 5
     Enchanter_mana = 5
     player_HP = 20
-    Enchanter_HP=20
+    Enchanter_HP = 20
     Won = False
     Enemy_ai = Enchanter
     score = 0
     max_time = 1200000
     start_time = time.time()
     gameDisplay = display
-    BattleGround = pygame.image.load("Assets\Sprites\pixil-frame-0.png")
-    inkblot = pygame.image.load("Assets\Sprites\InkBlot.png")
+    BattleGround = pygame.image.load(os.path.join("Assets", "Sprites", "pixil-frame-0.png"))
+    inkblot = pygame.image.load(os.path.join("Assets", "Sprites", "InkBlot.png"))
     clock = pygame.time.Clock()
-    gameDisplay.fill((0,0,0))
-    pygame.mixer.music.load("Assets\Music\DungeonSynth2Hr.mp3")
+    gameDisplay.fill((0, 0, 0))
+    pygame.mixer.music.load(os.path.join("Assets", "Music", "DungeonSynth2Hr.mp3"))
     pygame.mixer.music.play(loops=-1)
     pygame.mixer.music.set_volume(1)
-    HPFont = pygame.font.Font("""Assets\Fonts\Speech.ttf""", 60)
-    SpeechFont = pygame.font.Font("""Assets\Fonts\Speech.ttf""", 30)
+    HPFont = pygame.font.Font(os.path.join("Assets", "Fonts", "Speech.ttf"), 60)
+    SpeechFont = pygame.font.Font(os.path.join("Assets", "Fonts", "Speech.ttf"), 30)
     pause = SpeechFont.render('Paused', True, (255, 255, 255))
     epoch = int(time.time())
     if RPC_on:
         RPC.update(
-        pid=pid,
-        state="Inking and Incanting",
-        details=f"{player_HP}:{Enchanter_HP}",
-        start=epoch, 
-        large_image="icon",
-        large_text="The Enchanters Book awaits....")
+            pid=pid,
+            state="Inking and Incanting",
+            details=f"{player_HP}:{Enchanter_HP}",
+            start=epoch,
+            large_image="icon",
+            large_text="The Enchanters Book awaits...."
+        )
     if Ai == 'enchanter':
         Ready = SpeechFont.render('Are you Ready, Mage?', True, (255, 150, 255))
         Begin = SpeechFont.render('Let us begin.', True, (255, 150, 255))
@@ -46,7 +47,7 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
         Bloc = (870, 900)
         Enemy_ai = Monarch
     elif Ai == 'madman':
-        TitleFont = pygame.font.Font("""Assets\Fonts\Books-Vhasenti.ttf""", 50)
+        TitleFont = pygame.font.Font(os.path.join("Assets", "Fonts", "Books-Vhasenti.ttf"), 50)
         Ready = SpeechFont.render('The walls, I hear them in the walls. Those Ticks.', True, (255, 0, 0))
         Begin = TitleFont.render('Do you hear them too?', True, (255, 0, 0))
         Rloc = (725, 900)
@@ -59,7 +60,7 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
         Bloc = (870, 900)
         Enemy_ai = Enchanter
 
-    # enchanters speech
+    # Enchanters speech
     for i in range(0, 5):
         gameDisplay.fill((0, 0, 0))
         if i == 1:
@@ -67,7 +68,7 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
         if i == 3:
             gameDisplay.blit(Begin, Bloc)
         pygame.display.flip()
-        
+
         clock.tick(100)
         skip = False
         if i != 2 or i != 0:
@@ -80,7 +81,7 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
                         skip = True
                 pygame.time.delay(1)
-                    
+
         else:
             for i in range(2000):
                 if skip:
@@ -91,9 +92,8 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
                         skip = True
                 pygame.time.delay(1)
-                    
-        
-    # fade in the background
+
+    # Fade in the background
     a = 0
     for i in range(255):
         gameDisplay.fill((0, 0, 0))
@@ -102,7 +102,7 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
         gameDisplay.blit(BattleGround, (460, 0))
         pygame.display.flip()
 
-    # fade in the UI + pumps    
+    # Fade in the UI + pumps
     pygame.time.delay(1)
     running = True
     Pumps = [Units.Generator((760, 315)), Units.Generator((1120, 315)), Units.Generator((760, 650)), Units.Generator((1120, 650))]
@@ -113,9 +113,9 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
     Summoner_cost = SpeechFont.render('6', True, (0, 0, 0))
     Runner_cost = SpeechFont.render('8', True, (0, 0, 0))
     Tank_cost = SpeechFont.render('8', True, (0, 0, 0))
-    summon_UI = pygame.image.load("Assets\Sprites\Selecetion grid.png")
+    summon_UI = pygame.image.load(os.path.join("Assets", "Sprites", "Selecetion grid.png"))
     a = 0
-    manaCounter = pygame.image.load("Assets\Sprites\Mana_counter\\5.png")
+    manaCounter = pygame.image.load(os.path.join("Assets", "Sprites", "Mana_counter", "5.png"))
     for i in range(255):
         gameDisplay.fill((0, 0, 0))
         gameDisplay.blit(BattleGround, (460, 0))
@@ -143,12 +143,11 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
         gameDisplay.blit(Hp, (200, 200))
         pygame.display.flip()
 
-    # loading Vars
-    cursor_img = pygame.image.load("Assets\Sprites\Mouse.png")
+    # Loading Vars
+    cursor_img = pygame.image.load(os.path.join("Assets", "Sprites", "Mouse.png"))
     pygame.mouse.set_visible(False)
     startselect = (960, 540)
     endselect = (0, 0)
-    frame = 0
     counter = 0
     Selecting = False
     selected = []
@@ -198,11 +197,26 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
         SaveUpdater.encode_save_file(save)
 
     pygame.event.clear()
+
+    # Initialize variables for delta time
+    last_time = time.time()
+    mana_timer = 0
+    summon_timer = 0
+    targeting_timer = 0
+    # Main game loop
+    running = True
     while running:
+        # Calculate delta time
+        current_time = time.time()
+        dt = current_time - last_time
+        last_time = current_time
+
+        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 running = False
                 pygame.quit()
+                return False
             if event.type == KEYDOWN and event.key == K_p:
                 paused = True
                 while paused:
@@ -214,7 +228,6 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
                             paused = False
                         if event.type == KEYDOWN and event.key == K_p:
                             paused = False 
-                    clock.tick(100)
             # start of selection
             if event.type == MOUSEBUTTONDOWN and event.button == 1:
                 if 598 < event.pos[0] < 1322 and not Selecting and 154 < event.pos[1] < 876:
@@ -342,7 +355,7 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
         for f in friendly:
             # checking for collision
             for e in enemy:
-                if f.x in range(e.x, e.x + 12, 1) and f.y in range(e.y, e.y + 12, 1):
+                if f.x in range(int(e.x), int(e.x + 12), 1) and f.y in range(int(e.y), int(e.y + 12), 1):
                     # combat
                     f.hp -= e.attack
                     e.hp -= f.attack
@@ -362,17 +375,22 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
                 continue
             # movement
             else:
-                f.move(frame, friendly)
+                f.move(dt, friendly)
                 gameDisplay.blit(f.Asset, (f.x, f.y))
             # counting the number of controlled pumps
             if f.__class__.__name__ == "Generator":
                 p_controled += 1
-            if f.__class__.__name__ == "Summoner" and frame in range(0, 500, 100):
-                friendly.append(Units.Minion([f.x+3, f.y+3]))
-                friendly[-1].target = f.target
+            if f.__class__.__name__ == "Summoner":
+                if not hasattr(e, "spawn_timer"):
+                    f.spawn_timer = 0  # Initialize spawn timer if not already set
+                f.spawn_timer += dt  # Increment spawn timer by delta time
+                if f.spawn_timer >= 1:  # Check if 1 second has passed
+                    friendly.append(Units.Minion([e.x + 3, e.y + 3]))
+                    friendly[-1].target = f.target
+                    f.spawn_timer = 0  # Reset the spawn timer
             if f.__class__.__name__ == "Minion":
-                f.lifetime += 1
-                if f.lifetime >= 1000:
+                f.lifetime += dt
+                if f.lifetime >= 10:
                     inkblots.append([(f.x, f.y), 255, 1000, random.randint(0, 360)])
                     friendly.remove(f)
                     continue
@@ -395,42 +413,42 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
                 enemy.remove(e)
                 continue
             else:
-                e.move(frame, enemy)
+                e.move(dt, enemy)
                 gameDisplay.blit(e.Asset, (e.x, e.y))
             if e.__class__.__name__ == "Generator":
                 p_e_controled += 1
-            if e.__class__.__name__ == "Summoner" and frame in range(0, 500, 100):
-                enemy.append(Units.Minion([e.x+3, e.y+3]))
-                enemy[-1].target = e.target
+            if e.__class__.__name__ == "Summoner":
+                if not hasattr(e, "spawn_timer"):
+                    e.spawn_timer = 0  # Initialize spawn timer if not already set
+                e.spawn_timer += dt  # Increment spawn timer by delta time
+                if e.spawn_timer >= 1:  # Check if 1 second has passed
+                    enemy.append(Units.Minion([e.x + 3, e.y + 3]))
+                    enemy[-1].target = e.target
+                    e.spawn_timer = 0  # Reset the spawn timer
             if e.__class__.__name__ == "Minion":
-                e.lifetime += 1
-                if e.lifetime >= 1000:
+                e.lifetime += dt
+                if e.lifetime >= 10:
                     inkblots.append([(e.x, e.y), 255, 1000, random.randint(0, 360)])
                     enemy.remove(e)
                     continue
 
         # Mana Regen, for both player and Enchanter
         P_ratio = {0: 1, 1: 3, 2: 4, 3: 4, 4: 6}
-
-        divisor = P_ratio[p_controled]
-        if frame in range(0, 500,int(500/divisor)):
-            player_mana += 1
-            score += 5
-            if player_mana > 9:
-                player_mana = 9
         
         divisor = P_ratio[p_e_controled]
-        if frame in range(0, 500,int(500/divisor)):
-            Enchanter_mana += 1
-            if Enchanter_mana > 9:
-                Enchanter_mana = 9
+        mana_timer += dt
+        if mana_timer >= (5/divisor):
+            player_mana = min(player_mana + 1, 9)
+            Enchanter_mana = min(Enchanter_mana + 1, 9)
+            mana_timer = 0
         
         if Ai == 'madman':
             #Yes, the madman Cheats, Hes mad, he doesnt care about the rules
             Enchanter_mana = 9
 
         # Summoning enchanter units
-        if frame in (100, 200, 300, 400, 500):
+        summon_timer += dt
+        if summon_timer >= 5:
             summon = Enemy_ai.summon(Enchanter_mana, p_e_controled, enemy)
             print(summon)
             if summon == 0:
@@ -474,17 +492,16 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
             running = False
             Won = True
 
-        selection_icon = pygame.image.load("Assets\Sprites\\unit_sprites\Selected.png")
+        selection_icon = pygame.image.load(os.path.join("Assets", "Sprites", "unit_sprites", "Selected.png")) 
         for s in selected:
             gameDisplay.blit(selection_icon, (s.x, s.y))
-        if frame >= 500:
-            frame = 0
-            counter += 1
-            if counter == 3:
-                Enemy_ai.target(enemy, friendly, Pumps, player_HP, Enchanter_HP)
-                counter = 0
+
+        targeting_timer += dt
+        if targeting_timer >= 10:  # Update targeting every 10 seconds
+            Enemy_ai.target(enemy, friendly, [], player_HP, Enchanter_HP)
+            targeting_timer = 0
         # player mana display
-        manaPath = "Assets\Sprites\Mana_counter\\" + str(player_mana) + ".png"
+        manaPath = os.path.join("Assets", "Sprites", "Mana_counter", str(player_mana) + ".png")
         manaCounter = pygame.image.load(manaPath)
         gameDisplay.blit(manaCounter, (200, 850))
 
@@ -514,7 +531,15 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
         pygame.display.flip()
         clock.tick(100)
         gameDisplay.fill((0, 0, 0))
-        frame += 1
+
+        # Display FPS counter
+        fps = int(clock.get_fps())
+        fps_text = SpeechFont.render(f"FPS: {fps}", True, (255, 255, 255))
+        gameDisplay.blit(fps_text, (192, 300))
+        dt_text = SpeechFont.render(f"dt: {round(dt*1000, 3)}ms", True, (255, 255, 255))
+        gameDisplay.blit(dt_text, (192, 350))
+
+
     
     end_time = time.time()
     total_time = end_time - start_time
@@ -635,7 +660,7 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
             gameDisplay.blit(BattleGround, (460, 0))
 
             for e in enemy:
-                e.move(frame, enemy)
+                e.move(dt, enemy)
                 gameDisplay.blit(e.Asset, (e.x, e.y))
                 if e.x in range(961, 971) and e.y in range(855, 865):
                     player_HP -= e.attack
@@ -656,7 +681,6 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
 
             pygame.display.flip()
             clock.tick(100)
-            frame += 1
         Loss_1 = SpeechFont.render(' All you need to do is learn…', True, (255, 150, 255))
         Loss_2 = SpeechFont.render('Again.', True, (255, 150, 255))
         l1Loc = (800, 900)
@@ -705,7 +729,7 @@ def BatStart(Ai:str, display:pygame.Surface, RPC_on:bool, RPC:object, pid):
         
 
     # Ask if the player wants to play again
-    play_again_font = pygame.font.Font("Assets\Fonts\Speech.ttf", 40)
+    play_again_font = pygame.font.Font(os.path.join("Assets", "Fonts", "Speech.ttf"), 40)
     play_again_text = play_again_font.render('Do you want to play again? (Y/N)', True, (255, 255, 255))
     score = play_again_font.render(str(int(score)), True, (255, 255, 255))
     gameDisplay.fill((0, 0, 0))

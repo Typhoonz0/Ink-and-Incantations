@@ -200,9 +200,13 @@ def BatStart(Ai: str, display: pygame.Surface, RPC_on: bool, RPC: object, pid):
 
     # Initialize variables for delta time
     last_time = time.time()
-    mana_timer = 0
+    player_mana_timer = 0
+    enchanter_mana_timer = 0
     summon_timer = 0
     targeting_timer = 0
+    show_fps_debug = False
+    show_mana_debug = False
+
     # Main game loop
     running = True
     while running:
@@ -217,6 +221,20 @@ def BatStart(Ai: str, display: pygame.Surface, RPC_on: bool, RPC: object, pid):
                 running = False
                 pygame.quit()
                 return False
+            if event.type == KEYDOWN and event.key == K_F1:
+                if not show_fps_debug:
+                    show_fps_debug = True
+                    show_mana_debug = False
+                else:
+                    show_fps_debug = False
+                    show_mana_debug = False
+            if event.type == KEYDOWN and event.key == K_F2:
+                if show_mana_debug:
+                    show_mana_debug = False
+                    show_fps_debug = False
+                else:
+                    show_mana_debug = True
+                    show_fps_debug = True
             if event.type == KEYDOWN and event.key == K_p:
                 paused = True
                 while paused:
@@ -435,17 +453,21 @@ def BatStart(Ai: str, display: pygame.Surface, RPC_on: bool, RPC: object, pid):
         # Mana Regen, for both player and Enchanter
         P_ratio = {0: 1, 1: 3, 2: 4, 3: 4, 4: 6}
         
-        divisor = P_ratio[p_e_controled]
-        mana_timer += dt
-        if mana_timer >= (5/divisor):
+        divisor = P_ratio[p_controled]
+        player_mana_timer += dt
+        if player_mana_timer >= (5/divisor):
             player_mana = min(player_mana + 1, 9)
+            player_mana_timer = 0
+        enchanter_mana_timer += dt
+        divisor_text = SpeechFont.render(f"Divisor: {str(divisor)}", True, (255, 255, 255))
+        divisor = P_ratio[p_e_controled]
+        if enchanter_mana_timer >= (5/divisor):
             Enchanter_mana = min(Enchanter_mana + 1, 9)
-            mana_timer = 0
-        
+            enchanter_mana_timer = 0
+
         if Ai == 'madman':
             #Yes, the madman Cheats, Hes mad, he doesnt care about the rules
             Enchanter_mana = 9
-
         # Summoning enchanter units
         summon_timer += dt
         if summon_timer >= 5:
@@ -527,18 +549,25 @@ def BatStart(Ai: str, display: pygame.Surface, RPC_on: bool, RPC: object, pid):
             start=epoch, 
             large_image="icon",
             large_text="The Enchanters Book awaits....")
-        # display update, counters, and FPS
+        
+        # Display FPS counter
+        fps = int(clock.get_fps())
+        if show_fps_debug:
+            fps_text = SpeechFont.render(f"FPS: {fps}", True, (255, 255, 255))
+            gameDisplay.blit(fps_text, (192, 300))
+            dt_text = SpeechFont.render(f"dt: {round(dt*1000, 3)}ms", True, (255, 255, 255))
+            gameDisplay.blit(dt_text, (192, 350))
+        if show_mana_debug:
+            mana_text = SpeechFont.render(f"Mana Timer: {round(player_mana_timer, 3)}", True, (255, 255, 255))
+            gameDisplay.blit(mana_text, (192, 400))
+            gameDisplay.blit(divisor_text, (192, 450))
+            mana_text = SpeechFont.render(f"Enchanter Mana Timer: {round(enchanter_mana_timer, 3)}", True, (255, 255, 255))
+            gameDisplay.blit(mana_text, (192, 500))
+            Enchanter_mana_text = SpeechFont.render(f"Enchanter Mana: {Enchanter_mana}", True, (255, 255, 255))
+            gameDisplay.blit(Enchanter_mana_text, (192, 550))
         pygame.display.flip()
         clock.tick(100)
         gameDisplay.fill((0, 0, 0))
-
-        # Display FPS counter
-        fps = int(clock.get_fps())
-        fps_text = SpeechFont.render(f"FPS: {fps}", True, (255, 255, 255))
-        gameDisplay.blit(fps_text, (192, 300))
-        dt_text = SpeechFont.render(f"dt: {round(dt*1000, 3)}ms", True, (255, 255, 255))
-        gameDisplay.blit(dt_text, (192, 350))
-
 
     
     end_time = time.time()

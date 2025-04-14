@@ -1,7 +1,8 @@
 """Madman Action Handler Class"""
 import random, pygame, os, platform, difflib, Units
 from Ai.names import names
-def target(controlled:list, targets:list, gens:list, player_hp:int, enchanter_hp:int) -> None:
+
+def target(controlled: list, targets: list, gens: list, player_hp: int, madman_hp: int, player_base: list, madman_base: list) -> None:
     """
     Updates every enemy troop with a target based on the game state
     """
@@ -15,23 +16,21 @@ def target(controlled:list, targets:list, gens:list, player_hp:int, enchanter_hp
             if targets:
                 choices.extend(targets)
 
-            #this section is done weirdly in order to prevent SubScriptable Errors from happening, Before it was using everything like a dic
-            #Now everything is being treated like a unit
-            Random = Units.Unit()
-            Random.x = random.randint(598, 1322)
-            Random.y = random.randint(154, 876)
+            # Add player's base as a potential target
+            choices.append({'x': player_base[0], 'y': player_base[1]})
 
-
-            choices.append(Random)  # Random position on the map
             Targeted = random.choice(choices)
-            unit.target = [Targeted.x, Targeted.y]
+            unit.target = [Targeted['x'], Targeted['y']]
         else:
-            # Randomly move to a random position on the map
-            unit.target = [random.randint(0, 1920), random.randint(0, 1080)]
+            # Randomly move to a random position near the madman base
+            unit.target = [
+                random.randint(madman_base[0] - 100, madman_base[0] + 100),
+                random.randint(madman_base[1] - 100, madman_base[1] + 100)
+            ]
 
-def summon(mana:int, p_e_controlled:int, controlled:list) -> None:
+def summon(mana: int, p_e_controlled: int, controlled: list) -> int:
     """
-    Returns the id of the troop the Ai wants to summon
+    Returns the id of the troop the AI wants to summon
     """
     # Define the units and their mana costs
     units = [
@@ -53,21 +52,12 @@ def summon(mana:int, p_e_controlled:int, controlled:list) -> None:
     chosen_unit = random.choice(affordable_units)
     return chosen_unit['id']
 
-
-def scare():
-    """Madmans moment of self awareness, Returns the Players name if ran"""
-    s = os.getlogin()
-    res = []
-    for l in s:
-        if l.isupper() and not res:
-            res.append(l)
-        elif l.isupper():
-            pass
-        else:
-            res.append(l)
-    res[0].upper()
-    if platform.system() == 'Windows':
-        res = difflib.get_close_matches(''.join(res), names, 1)
-        return res[0].upper()
-    else:
-        return "YOU LAIR"
+def scare() -> str:
+    """
+    Madman's moment of self-awareness. Returns the player's name if run.
+    """
+    try:
+        s = os.getlogin()
+        return s.capitalize()
+    except Exception:
+        return "Player"

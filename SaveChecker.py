@@ -88,14 +88,5 @@ def decode_save_file():
 
 # ---- DEMO ----
 if __name__ == "__main__":
-    data = {
-        'enchanter': False,
-        'monarch': False,
-        'madman': False,
-        'tutorial': False,
-        'beat_enchanter_first_time': False
-    }
-    encode_save_file(data)
-    print("Saved:", data)
     loaded = decode_save_file()
     print("Loaded:", loaded)

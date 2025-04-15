@@ -10,7 +10,7 @@ def BatStart(Ai: str, display: pygame.Surface, RPC_on: bool, RPC: object, pid):
     print()
 
     # Initialize variables
-    player_mana = 5
+    player_mana = 5 if not SaveUpdater.decode_save_file()['1337_haxxor'] else 10000
     Enchanter_mana = 5
     player_HP = 20
     Enchanter_HP = 20
@@ -24,9 +24,10 @@ def BatStart(Ai: str, display: pygame.Surface, RPC_on: bool, RPC: object, pid):
     inkblot = pygame.image.load(os.path.join("Assets", "Sprites", "InkBlot.png"))
     clock = pygame.time.Clock()
     gameDisplay.fill((0, 0, 0))
-    pygame.mixer.music.load(os.path.join("Assets", "Music", "DungeonSynth2Hr.mp3"))
-    pygame.mixer.music.play(loops=-1)
-    pygame.mixer.music.set_volume(1)
+    if not SaveUpdater.decode_save_file()['shut_up']:
+        pygame.mixer.music.load(os.path.join("Assets", "Music", "DungeonSynth2Hr.mp3"))
+        pygame.mixer.music.play(loops=-1)
+        pygame.mixer.music.set_volume(1)
 
     # Scale assets dynamically
     BattleGround = pygame.transform.smoothscale(BattleGround, (screen_width * 0.55, screen_height*1))
@@ -146,46 +147,47 @@ def BatStart(Ai: str, display: pygame.Surface, RPC_on: bool, RPC: object, pid):
         Enemy_ai = Enchanter
 
     # Enchanters speech
-    for i in range(0, 5):
-        gameDisplay.fill((0, 0, 0))
-        if i == 1:
-            gameDisplay.blit(Ready, Rloc)
-        if i == 3:
-            gameDisplay.blit(Begin, Bloc)
-        pygame.display.flip()
+    if not SaveUpdater.decode_save_file()['holy_yap']:
+        for i in range(0, 5):
+            gameDisplay.fill((0, 0, 0))
+            if i == 1:
+                gameDisplay.blit(Ready, Rloc)
+            if i == 3:
+                gameDisplay.blit(Begin, Bloc)
+            pygame.display.flip()
 
-        clock.tick(100)
-        skip = False
-        if i != 2 or i != 0:
-            for i in range(4000):
-                if skip:
-                    break
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-                        quit()
-                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                        skip = True
-                pygame.time.delay(1)
+            clock.tick(100)
+            skip = False
+            if i != 2 or i != 0:
+                for i in range(4000):
+                    if skip:
+                        break
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                            quit()
+                        if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                            skip = True
+                    pygame.time.delay(1)
 
-        else:
-            for i in range(2000):
-                if skip:
-                    break
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-                        quit()
-                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                        skip = True
-                pygame.time.delay(1)
+            else:
+                for i in range(2000):
+                    if skip:
+                        break
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                            quit()
+                        if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                            skip = True
+                    pygame.time.delay(1)
 
-    # Fade in the background
-    a = 0
-    for i in range(255):
-        gameDisplay.fill((0, 0, 0))
-        a += 1
-        BattleGround.set_alpha(a)
-        gameDisplay.blit(BattleGround, BattleGround_pos)
-        pygame.display.flip()
+        # Fade in the background
+        a = 0
+        for i in range(255):
+            gameDisplay.fill((0, 0, 0))
+            a += 1
+            BattleGround.set_alpha(a)
+            gameDisplay.blit(BattleGround, BattleGround_pos)
+            pygame.display.flip()
 
     # Fade in the UI + pumps
     pygame.time.delay(1)
@@ -609,7 +611,10 @@ def BatStart(Ai: str, display: pygame.Surface, RPC_on: bool, RPC: object, pid):
             gameDisplay.blit(selection_icon, (s.x, s.y))
 
         # player mana display
-        manaPath = os.path.join("Assets", "Sprites", "Mana_counter", str(player_mana) + ".png")
+        if not SaveUpdater.decode_save_file()['1337_haxxor']:
+            manaPath = os.path.join("Assets", "Sprites", "Mana_counter", str(player_mana) + ".png")
+        else:
+            manaPath = os.path.join("Assets", "Sprites", "Mana_counter", "hax" + ".png")
         manaCounter = pygame.image.load(manaPath)
         gameDisplay.blit(manaCounter, manaCounter_pos)
 

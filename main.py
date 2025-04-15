@@ -6,6 +6,7 @@ import os
 import multiprocessing  # Replacing threading with multiprocessing
 from pypresence import Presence, exceptions  # For Discord presence
 import Combat
+import SaveUpdater
 
 flags = FULLSCREEN | DOUBLEBUF
 
@@ -62,13 +63,14 @@ if __name__ == "__main__":
     gameDisplay.fill((0, 0, 0))
 
     # Load assets
-    icon = pygame.image.load(os.path.join("assets", "icon.png"))
-    menu_background = pygame.image.load(os.path.join("assets", "Openbook.png"))
+    icon = pygame.image.load(os.path.join("Assets", "Icon.png"))
+    menu_background = pygame.image.load(os.path.join("Assets", "Openbook.png"))
     selector = pygame.image.load(os.path.join("Assets", "Selector.jpg"))  # 235x119 size
     pygame.display.set_icon(icon)
-    music = pygame.mixer.Sound(os.path.join("Assets", "Music", "last-fight-dungeon-synth-music-281592.mp3"))
-    music.set_volume(1)
-    music.play(-1)  # Loop the music indefinitely
+    if not SaveUpdater.decode_save_file()['shut_up']:
+        music = pygame.mixer.Sound(os.path.join("Assets", "Music", "last-fight-dungeon-synth-music-281592.mp3"))
+        music.set_volume(1)
+        music.play(-1)  # Loop the music indefinitely
 
 
     # Scale factor for all assets
@@ -93,7 +95,8 @@ if __name__ == "__main__":
     # Render scaled text
     title = TitleFont.render('Ink & Incantations', False, (255, 0, 255))
     play = SpeechFont.render('PLAY', False, (255, 255, 255))
-    warning = TitleFont.render('Warning: This game is work in progress, some features are incomplete', False, (255, 0, 0))
+    if not SaveUpdater.decode_save_file()['holy_yap']:
+        warning = TitleFont.render('Warning: This game is work in progress, some features are incomplete', False, (255, 0, 0))
     _quit = SpeechFont.render('QUIT', False, (255, 255, 255))
 
     selector_enchanter = SpeechFont.render('Mage', False, (255, 255, 255))
@@ -110,45 +113,50 @@ if __name__ == "__main__":
     pid = os.getpid()
     client_id = "1336631328195481722"
     epoch = int(time.time())
-    try:
-        RPC, Connect = connect_rpc(client_id)
-    except Exception as e:
-        print(f"Failed to connect to Discord RPC: {e}")
+    if SaveUpdater.decode_save_file()['i_dont_want_discord']:
         Connect = False
-        RPC = Presence(client_id)
+        RPC = Presence("1336631328195481722")
+    else:
+        try:
+            RPC, Connect = connect_rpc(client_id)
+        except Exception as e:
+            print(f"Failed to connect to Discord RPC: {e}")
+            Connect = False
+            RPC = Presence(client_id)
 
     # Main menu and game logic
     running = True
-    a = 0
-    for i in range(255):
+    if not SaveUpdater.decode_save_file()['holy_yap']:
+        a = 0
+        for i in range(255):
+            gameDisplay.fill((0, 0, 0))
+            a += 1
+            warning.set_alpha(a)
+
+            gameDisplay.blit(warning, (screen_width * 0.025, screen_height * 0.4))
+
+            pygame.display.update()
+
         gameDisplay.fill((0, 0, 0))
-        a += 1
-        warning.set_alpha(a)
-
         gameDisplay.blit(warning, (screen_width * 0.025, screen_height * 0.4))
-
         pygame.display.update()
+        skip = False
+        for i in range(4000):
+            if skip:
+                break
+            for event in pygame.event.get():
+                if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                    skip = True
+            pygame.time.delay(1)
 
-    gameDisplay.fill((0, 0, 0))
-    gameDisplay.blit(warning, (screen_width * 0.025, screen_height * 0.4))
-    pygame.display.update()
-    skip = False
-    for i in range(4000):
-        if skip:
-            break
-        for event in pygame.event.get():
-            if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                skip = True
-        pygame.time.delay(1)
+        for i in range(255):
+            gameDisplay.fill((0, 0, 0))
+            a -= 1
+            warning.set_alpha(a)
 
-    for i in range(255):
-        gameDisplay.fill((0, 0, 0))
-        a -= 1
-        warning.set_alpha(a)
-
-        gameDisplay.blit(warning, (screen_width * 0.025, screen_height * 0.4))
-  
-        pygame.display.update()
+            gameDisplay.blit(warning, (screen_width * 0.025, screen_height * 0.4))
+    
+            pygame.display.update()
 
     a = 0
     v = 0
@@ -204,29 +212,32 @@ if __name__ == "__main__":
                 if event.pos[0] in range(play_rect.left - 10, play_rect.right + 10) and event.pos[1] in range(play_rect.top - 10, play_rect.bottom + 10):
                     a = 255
                     v = 1
-                    for i in range(255):
-                        gameDisplay.fill((0, 0, 0))
-                        a -= 1
-                        v -= 0.004
-                        pygame.mixer.music.set_volume(v)
-                        title.set_alpha(a)
-                        play.set_alpha(a)
-                        _quit.set_alpha(a)
-                        menu_background.set_alpha(a)
-                        selector.set_alpha(a)
-                        gameDisplay.blit(selector, (screen_width * 0, screen_height * 0.87))
-                        gameDisplay.blit(menu_background, menu_background_rect.topleft)
-                        gameDisplay.blit(title, title_rect.topleft)
-                        gameDisplay.blit(play, play_rect.topleft)
-                        gameDisplay.blit(_quit, quit_rect.topleft)
-                        pygame.time.delay(1)
-                        pygame.display.update()
-                    pygame.time.delay(1000)
-                    Again = True
-                    while Again:
-                        music.stop()
-                        gameDisplay.fill((0, 0, 0))
-                        Again = Combat.BatStart(ai, gameDisplay, Connect, RPC, pid)
+                    if not SaveUpdater.decode_save_file()['holy_yap']:
+                        for i in range(255):
+                            gameDisplay.fill((0, 0, 0))
+                            a -= 1
+                            v -= 0.004
+                            pygame.mixer.music.set_volume(v)
+                            title.set_alpha(a)
+                            play.set_alpha(a)
+                            _quit.set_alpha(a)
+                            menu_background.set_alpha(a)
+                            selector.set_alpha(a)
+                            gameDisplay.blit(selector, (screen_width * 0, screen_height * 0.87))
+                            gameDisplay.blit(menu_background, menu_background_rect.topleft)
+                            gameDisplay.blit(title, title_rect.topleft)
+                            gameDisplay.blit(play, play_rect.topleft)
+                            gameDisplay.blit(_quit, quit_rect.topleft)
+                            pygame.time.delay(1)
+                            pygame.display.update()
+                        pygame.time.delay(1000)
+                        Again = True
+                        while Again:
+                            if not SaveUpdater.decode_save_file()['shut_up']:
+                                music.stop()
+                            gameDisplay.fill((0, 0, 0))
+                        
+                    Again = Combat.BatStart(ai, gameDisplay, Connect, RPC, pid)
                     running = False
                 # QUIT button
                 elif event.pos[0] in range(quit_rect.left - 10, quit_rect.right + 10) and event.pos[1] in range(quit_rect.top - 10, quit_rect.bottom + 10):

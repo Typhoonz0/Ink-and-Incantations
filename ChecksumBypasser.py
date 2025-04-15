@@ -114,6 +114,6 @@ if __name__ == "__main__":
     }
     encode_save_file(data)
     print("[\033[32m OK \033[0m] Data encoded!")
-    decode_save_file()
+    decode_save_file(data)
     print("[\033[32m OK \033[0m] Data decoded!")
 
